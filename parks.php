@@ -116,7 +116,7 @@ $conn->close();
 
     <div class="container">
         <h2 class="mt-3">Nationalsssss Parks Management</h2>
-
+        <h2 class="mt-3">Nationalsssss Parks Management</h2>
         <!-- Button to add park -->
         <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#parkModal">Add Park</button>
 
