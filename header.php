@@ -83,7 +83,7 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="setupDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                                Setup
+                                Setups
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="setupDropdown">
                                 <li><a class="dropdown-item" href="#">National Parks</a></li>
