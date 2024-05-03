@@ -86,8 +86,8 @@
                                 Setup
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="setupDropdown">
-                                <li><a class="dropdown-item" href="#">National Parks</a></li>
-                                <li><a class="dropdown-item" href="#">Accomodations</a></li>
+                                <li><a class="dropdown-item" href="parks.php">National Parks</a></li>
+                                <li><a class="dropdown-item" href="accomodations.php">Accomodations</a></li>
                                 <li><a class="dropdown-item" href="#">Flights</a></li>
                                 <li><a class="dropdown-item" href="#">Transport</a></li>
                             </ul>

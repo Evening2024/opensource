@@ -1,64 +1,85 @@
 <?php
+// Include database connection file (update with your actual connection parameters)
+include 'db_connection.php';
 
-// Include the database connection file
-require 'db_connection.php';
+// Initialize variables
+$error_message = '';
+$success_message = '';
 
-// Initialize variables for form data and error messages
-$park_name = $region = $high_season = $low_season = "";
-$error_message = "";
-$fees_data = [];
+// Check if the form was submitted
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Get the park_name from URL parameters
+    $park_name = isset($_GET['park_name']) ? filter_var($_GET['park_name'], FILTER_SANITIZE_STRING) : '';
 
-// Handle form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Retrieve form data
-    $park_name = trim($_POST["park_name"]);
-    $region = trim($_POST["region"]);
-    $high_season = trim($_POST["high_season"]);
-    $low_season = trim($_POST["low_season"]);
+    // Initialize form data variables
+    $seasonname = isset($_POST['seasonname']) ? filter_var($_POST['seasonname'], FILTER_SANITIZE_STRING) : '';
+    $seasonduration = isset($_POST['seasonduration']) ? filter_var($_POST['seasonduration'], FILTER_SANITIZE_STRING) : '';
+    $ea_citizen_adult = isset($_POST['ea_citizen_adult']) ? filter_var($_POST['ea_citizen_adult'], FILTER_SANITIZE_STRING) : '';
+    $ea_citizen_children = isset($_POST['ea_citizen_children']) ? filter_var($_POST['ea_citizen_children'], FILTER_SANITIZE_STRING) : '';
+    $ea_citizen_below_5 = isset($_POST['ea_citizen_below_5']) ? filter_var($_POST['ea_citizen_below_5'], FILTER_SANITIZE_STRING) : '';
+    $non_ea_citizen_adult = isset($_POST['non_ea_citizen_adult']) ? filter_var($_POST['non_ea_citizen_adult'], FILTER_SANITIZE_STRING) : '';
+    $non_ea_citizen_children = isset($_POST['non_ea_citizen_children']) ? filter_var($_POST['non_ea_citizen_children'], FILTER_SANITIZE_STRING) : '';
+    $non_ea_citizen_below_5 = isset($_POST['non_ea_citizen_below_5']) ? filter_var($_POST['non_ea_citizen_below_5'], FILTER_SANITIZE_STRING) : '';
+    $tz_resident_above_16 = isset($_POST['tz_resident_above_16']) ? filter_var($_POST['tz_resident_above_16'], FILTER_SANITIZE_STRING) : '';
+    $tz_resident_children = isset($_POST['tz_resident_children']) ? filter_var($_POST['tz_resident_children'], FILTER_SANITIZE_STRING) : '';
+    $tz_resident_below_5 = isset($_POST['tz_resident_below_5']) ? filter_var($_POST['tz_resident_below_5'], FILTER_SANITIZE_STRING) : '';
+    $guide_entry_fee = isset($_POST['guide_entry_fee']) ? filter_var($_POST['guide_entry_fee'], FILTER_SANITIZE_STRING) : '';
+    $vehicle_fee = isset($_POST['vehicle_fee']) ? filter_var($_POST['vehicle_fee'], FILTER_SANITIZE_STRING) : '';
 
-    // Retrieve fees data
-    $fees_data = [
-        "ea_citizen_adult" => $_POST["ea_citizen_adult"],
-        "ea_citizen_children" => $_POST["ea_citizen_children"],
-        "ea_citizen_below_5" => $_POST["ea_citizen_below_5"],
-        "non_ea_citizen_adult" => $_POST["non_ea_citizen_adult"],
-        "non_ea_citizen_children" => $_POST["non_ea_citizen_children"],
-        "non_ea_citizen_below_5" => $_POST["non_ea_citizen_below_5"],
-        "tz_resident_above_16" => $_POST["tz_resident_above_16"],
-        "tz_resident_children" => $_POST["tz_resident_children"],
-        "tz_resident_below_5" => $_POST["tz_resident_below_5"],
-        "hotel_concession_fees" => $_POST["hotel_concession_fees"],
-        "guide_entry_fee" => $_POST["guide_entry_fee"],
-        "vehicle_fee" => $_POST["vehicle_fee"]
-    ];
-
-    // Check for empty inputs
-    if (empty($park_name) || empty($region) || empty($high_season) || empty($low_season)) {
-        $error_message = "Please fill in all required fields.";
+    // Validate inputs to ensure required fields are not empty
+    if (empty($park_name) || empty($seasonname) || empty($seasonduration) || empty($ea_citizen_adult) ||
+        empty($non_ea_citizen_adult) || empty($tz_resident_above_16)) {
+        $error_message = 'Please fill in all required fields.';
     } else {
-        // Insert the data into the database
-        $insert_query = "INSERT INTO national_parks (park_name, region, high_season, low_season) VALUES (?, ?, ?, ?)";
-        $stmt = $conn->prepare($insert_query);
-        $stmt->bind_param("ssss", $park_name, $region, $high_season, $low_season);
-        $stmt->execute();
-        $park_id = $stmt->insert_id; // Retrieve the last inserted ID
-        $stmt->close();
+        // Use a prepared statement to insert data into the database
+        $stmt = $conn->prepare("INSERT INTO national_park_details (park_name, seasonname, seasonduration, ea_citizen_adult, ea_citizen_children, ea_citizen_below_5, non_ea_citizen_adult, non_ea_citizen_children, non_ea_citizen_below_5, tz_resident_above_16, tz_resident_children, tz_resident_below_5, guide_entry_fee, vehicle_fee) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-        // Insert fees data
-        foreach ($fees_data as $key => $value) {
-            $insert_fee_query = "INSERT INTO park_fees (park_id, fee_type, amount) VALUES (?, ?, ?)";
-            $stmt = $conn->prepare($insert_fee_query);
-            $stmt->bind_param("isi", $park_id, $key, $value);
-            $stmt->execute();
-            $stmt->close();
+        // Bind parameters to the prepared statement
+        $stmt->bind_param("ssssssssssssss",
+            $park_name,
+            $seasonname,
+            $seasonduration,
+            $ea_citizen_adult,
+            $ea_citizen_children,
+            $ea_citizen_below_5,
+            $non_ea_citizen_adult,
+            $non_ea_citizen_children,
+            $non_ea_citizen_below_5,
+            $tz_resident_above_16,
+            $tz_resident_children,
+            $tz_resident_below_5,
+            $guide_entry_fee,
+            $vehicle_fee
+        );
+
+        // Execute the prepared statement
+        if ($stmt->execute()) {
+            // Successful insertion
+            $success_message = 'Data successfully inserted into the database.';
+            // Display the success message for 3 seconds and then redirect to parks.php
+            echo '<div class="alert alert-success">' . $success_message . '</div>';
+            echo '<script type="text/javascript">
+                setTimeout(function() {
+                    window.location.href = "parks.php";
+                }, 3000); // 3000 milliseconds = 3 seconds
+            </script>';
+        }
+         else {
+            // Error during insertion
+            $error_message = 'Failed to insert data into the database: ' . $stmt->error;
         }
 
-        // Redirect to refresh the page data
-        header("Location: " . $_SERVER["REQUEST_URI"]);
-        exit;
+        // Close the prepared statement
+        $stmt->close();
     }
 }
+
+// Close the database connection
+$conn->close();
+
+
 ?>
+
 
 <!-- HTML Section -->
 <!DOCTYPE html>
@@ -111,6 +132,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- Include header.php file for the header -->
     <?php include 'header.php'; ?>
 
+    
+    <!-- Retrieve park name from URL parameter -->
+    <?php
+    $park_name = isset($_GET['park_name']) ? filter_var($_GET['park_name'], FILTER_SANITIZE_STRING) : '';
+    ?>
+
     <!-- Form for registering national park details -->
     <div class="container">
         <h2>Register National Park Details</h2>
@@ -124,16 +151,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <!-- Form to register national park details -->
         <form method="POST">
+
+              <!-- Park Name -->
+              <div class="form-group">
+                <label for="park_name">Park Name:</label>
+                <input type="text" class="form-control" id="park_name" name="park_name" value="<?php echo htmlspecialchars($park_name); ?>" readonly>
+            </div>
             <!-- National Park Information -->
             
             <div class="form-group">
                 <label for="region">Season name  </label>
-                <input type="text" class="form-control" id="region" name="region" value="<?php echo htmlspecialchars($region); ?>">
+                <input type="text" class="form-control" id="seasonname" name="seasonname">
             </div>
 
             <div class="form-group">
                 <label for="region">Season duration  </label>
-                <input type="text" class="form-control" id="region" name="region" value="<?php echo htmlspecialchars($region); ?>">
+                <input type="text" class="form-control" id="seasonduration" name="seasonduration">
             </div>
 
             <!-- Park Fees Section -->

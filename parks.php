@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (isset($_POST["park_id"])) {
                 // Update the existing park details in the database
                 $park_id = $_POST["park_id"];
-                $update_query = "UPDATE national_parks SET park_name = ?, location = ?, description = ? WHERE id = ?";
+                $update_query = "UPDATE national_parks SET park_name = ?, location = ?, description = ? WHERE park_id = ?";
                 $stmt = $conn->prepare($update_query);
                 $stmt->bind_param("sssi", $park_name, $location, $description, $park_id);
                 $stmt->execute();
@@ -78,7 +78,7 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>National Parks Management</title>
     <!-- Include Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <!-- Custom CSS -->
     <style>
         /* Customize page appearance */
@@ -101,11 +101,16 @@ $conn->close();
 
         .table th, .table td {
             vertical-align: middle;
+            text-align: center; /* Center align table cell content */
         }
 
         .table th {
             background-color: #007bff;
-            color: white;
+            color: black;
+        }
+
+        .table-responsive {
+            overflow-x: auto; /* Allow horizontal scrolling for large tables */
         }
     </style>
 </head>
@@ -115,7 +120,8 @@ $conn->close();
     <?php include 'header.php'; ?>
 
     <div class="container">
-       
+        <h2 class="mt-3">National Parks Management</h2>
+
         <!-- Button to add park -->
         <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#parkModal">Add Park</button>
 
@@ -141,7 +147,7 @@ $conn->close();
                             </div>
                             <div class="form-group">
                                 <label for="description">Description:</label>
-                                <textarea class="form-control" id="description" name="description" rows="3"><?php echo htmlspecialchars($description); ?></textarea>
+                                <textarea class="form-control" id="description" name="description" rows="3" style="text-align: justify;"><?php echo htmlspecialchars($description); ?></textarea>
                             </div>
 
                             <!-- If editing, include a hidden input for the park_id -->
@@ -157,33 +163,41 @@ $conn->close();
         </div>
 
         <!-- Display existing park details in a well-decorated table -->
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Park Name</th>
-                        <th>Location</th>
-                        <th>Description</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($park_details_data as $index => $park_details): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($park_details["park_name"]); ?></td>
-                            <td><?php echo htmlspecialchars($park_details["location"]); ?></td>
-                            <td><?php echo htmlspecialchars($park_details["description"]); ?></td>
-                            <td>
-                                <button class="btn btn-secondary btn-sm" onclick="editPark('<?php echo $park_details["park_id"]; ?>', '<?php echo addslashes($park_details["park_name"]); ?>', '<?php echo addslashes($park_details["location"]); ?>', '<?php echo addslashes($park_details["description"]); ?>')">Edit</button>
-                                <button class="btn btn-danger btn-sm" onclick="deletePark('<?php echo $park_details["park_id"]; ?>')">Delete</button>
-                                <button class="btn btn-warning btn-sm">Rate</button>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
+       <!-- Display existing park details in a well-decorated table -->
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Park Name</th>
+                <th>Location</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($park_details_data as $index => $park_details): ?>
+                <tr>
+                    <td><?php echo $index + 1; ?></td> <!-- Display serial number -->
+                    <td><?php echo htmlspecialchars($park_details["park_name"]); ?></td>
+                    <td><?php echo htmlspecialchars($park_details["location"]); ?></td>
+                    <td><?php echo htmlspecialchars($park_details["description"]); ?></td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="editPark('<?php echo $park_details["park_id"]; ?>', '<?php echo addslashes($park_details["park_name"]); ?>', '<?php echo addslashes($park_details["location"]); ?>', '<?php echo addslashes($park_details["description"]); ?>')">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deletePark('<?php echo $park_details["park_id"]; ?>')">Delete</button>
+                        <!-- Rate button linking to addrates.php with park name as a query parameter -->
+                        <a href="addRates.php?park_name=<?php echo urlencode($park_details["park_name"]); ?>" class="btn btn-warning btn-sm">Rate</a>
+                        <!-- View Rates button linking to viewRates.php with park name as a query parameter -->
+                        <a href="viewRates.php?park_name=<?php echo urlencode($park_details["park_name"]); ?>" class="btn btn-info btn-sm">View Rates</a>
+                        <!-- Images button linking to parkimages.com with park ID and name -->
+                        <a href="parkimages.php?park_id=<?php echo $park_details["park_id"]; ?>&park_name=<?php echo urlencode($park_details["park_name"]); ?>" class="btn btn-success btn-sm">Images</a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+
 
     <!-- Custom JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
