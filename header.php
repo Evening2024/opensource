@@ -88,9 +88,11 @@
                             <ul class="dropdown-menu" aria-labelledby="setupDropdown">
                                 <li><a class="dropdown-item" href="parks.php">National Parks</a></li>
                                 <li><a class="dropdown-item" href="accomodations.php">Accomodations</a></li>
-                                <li><a class="dropdown-item" href="#">Flights</a></li>
+                                <li><a class="dropdown-item" href="flights.php">Flights</a></li>
                                 <li><a class="dropdown-item" href="#">Transport</a></li>
+                                <li><a class="dropdown-item" href="policies.php">Policies</a></li>
                             </ul>
+                           
                         </li>  
                         <li class="nav-item">
                             <a class="nav-link" href="#">Safari</a>

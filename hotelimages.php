@@ -125,9 +125,17 @@ $conn->close();
     <title>Hotel Images</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
         .container {
             max-width: 800px;
-            margin-top: 50px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         h2 {
@@ -141,37 +149,59 @@ $conn->close();
         }
 
         .image-container {
-            margin-top: 20px;
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
         }
 
         .image-card {
-            width: calc(33.33% - 10px); /* Three images per row with margin */
+            width: calc(33.33% - 20px);
             margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .image-card img {
             width: 100%;
             height: auto;
-            border-radius: 5px;
+            display: block;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .image-card .card-body {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .upload-form {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+
+        @media (max-width: 768px) {
+            .image-card {
+                width: 100%;
+            }
         }
     </style>
 </head>
 
 <body>
 
- <!-- Include header.php file for the header -->
- <?php include 'header.php'; ?>
+    <!-- Include header.php file for the header -->
+    <?php include 'header.php'; ?>
 
     <div class="container">
-    <a href="accomodations.php" class="btn btn-primary"> Back to Accommodations</a>
+        <a href="accomodations.php" class="btn btn-primary mb-3">Back to Accommodations</a>
         <h2>Images for <?php echo htmlspecialchars($hotel_name); ?></h2>
+
         <?php if (!empty($error)) : ?>
             <div class="alert alert-danger"><?php echo $error; ?></div>
         <?php endif; ?>
-
 
         <!-- Display Uploaded Images -->
         <div class="image-container">
@@ -181,21 +211,24 @@ $conn->close();
                     <div class="card-body">
                         <form method="POST">
                             <input type="hidden" name="image_id" value="<?php echo $image['image_id']; ?>">
-                            <button type="submit" name="delete" class="btn btn-danger">Delete</button>
+                            <button type="submit" name="delete" class="btn btn-danger btn-sm">Delete</button>
                         </form>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
-    </div>
-    
+
         <!-- Upload Form -->
-        <form method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <input type="file" name="image" class="form-control-file">
-            </div>
-            <button type="submit" name="upload" class="btn btn-primary">Upload Image</button>
-        </form>
+        <div class="upload-form">
+            <h4>Upload New Image</h4>
+            <form method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <input type="file" name="image" class="form-control-file">
+                </div>
+                <button type="submit" name="upload" class="btn btn-primary">Upload Image</button>
+            </form>
+        </div>
+    </div>
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>

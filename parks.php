@@ -163,7 +163,7 @@ $conn->close();
         </div>
 
         <!-- Display existing park details in a well-decorated table -->
-       <!-- Display existing park details in a well-decorated table -->
+      
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
@@ -184,13 +184,14 @@ $conn->close();
                     <td><?php echo htmlspecialchars($park_details["description"]); ?></td>
                     <td>
                         <button class="btn btn-secondary btn-sm" onclick="editPark('<?php echo $park_details["park_id"]; ?>', '<?php echo addslashes($park_details["park_name"]); ?>', '<?php echo addslashes($park_details["location"]); ?>', '<?php echo addslashes($park_details["description"]); ?>')">Edit</button>
-                        <button class="btn btn-danger btn-sm" onclick="deletePark('<?php echo $park_details["park_id"]; ?>')">Delete</button>
+                       
                         <!-- Rate button linking to addrates.php with park name as a query parameter -->
-                        <a href="addRates.php?park_name=<?php echo urlencode($park_details["park_name"]); ?>" class="btn btn-warning btn-sm">Rate</a>
+                        <a href="addRates.php?park_name=<?php echo urlencode($park_details["park_name"]); ?>" class="btn btn-warning btn-sm">Add Rates</a>
                         <!-- View Rates button linking to viewRates.php with park name as a query parameter -->
                         <a href="viewRates.php?park_name=<?php echo urlencode($park_details["park_name"]); ?>" class="btn btn-info btn-sm">View Rates</a>
                         <!-- Images button linking to parkimages.com with park ID and name -->
                         <a href="parkimages.php?park_id=<?php echo $park_details["park_id"]; ?>&park_name=<?php echo urlencode($park_details["park_name"]); ?>" class="btn btn-success btn-sm">Images</a>
+                        <button class="btn btn-danger btn-sm" onclick="deletePark('<?php echo $park_details["park_id"]; ?>')">Delete</button>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -203,56 +204,77 @@ $conn->close();
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    
     <script>
-        function editPark(parkId, parkName, location, description) {
-            // Set form values to the existing park details
-            document.getElementById("park_name").value = parkName;
-            document.getElementById("location").value = location;
-            document.getElementById("description").value = description;
+    // Function to initialize the modal for editing park details
+    function editPark(parkId, parkName, location, description) {
+        // Set form values to the existing park details
+        document.getElementById("park_name").value = parkName;
+        document.getElementById("location").value = location;
+        document.getElementById("description").value = description;
+
+        // Add hidden input for park_id
+        var parkIdInput = document.createElement("input");
+        parkIdInput.type = "hidden";
+        parkIdInput.name = "park_id";
+        parkIdInput.value = parkId;
+
+        // Append hidden input to the form
+        var form = document.querySelector("#parkForm");
+        form.appendChild(parkIdInput);
+
+        // Show the modal for adding/editing park details
+        $('#parkModal').modal('show');
+
+        // Handle modal close event
+        $('#parkModal').on('hidden.bs.modal', function () {
+            // Remove the dynamically added park_id input
+            parkIdInput.remove();
+        });
+    }
+
+    // Function to handle park deletion
+    function deletePark(parkId) {
+        if (confirm('Are you sure you want to delete this park?')) {
+            // Create a form and submit a POST request to delete the park
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '';
 
             // Add hidden input for park_id
-            var parkIdInput = document.createElement("input");
-            parkIdInput.type = "hidden";
-            parkIdInput.name = "park_id";
+            var parkIdInput = document.createElement('input');
+            parkIdInput.type = 'hidden';
+            parkIdInput.name = 'park_id';
             parkIdInput.value = parkId;
 
-            // Append hidden input to the form
-            var form = document.querySelector("#parkForm");
+            // Add hidden input for delete_park
+            var deleteInput = document.createElement('input');
+            deleteInput.type = 'hidden';
+            deleteInput.name = 'delete_park';
+            deleteInput.value = '1';
+
+            // Append inputs to the form
             form.appendChild(parkIdInput);
-            
-            // Show the modal for adding/editing park details
-            $('#parkModal').modal('show');
-        }
+            form.appendChild(deleteInput);
 
-        function deletePark(parkId) {
-            if (confirm('Are you sure you want to delete this park?')) {
-                // Create a form and submit a POST request to delete the park
-                var form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '';
-
-                // Add hidden input for park_id
-                var parkIdInput = document.createElement('input');
-                parkIdInput.type = 'hidden';
-                parkIdInput.name = 'park_id';
-                parkIdInput.value = parkId;
-                
-                // Add hidden input for delete_park
-                var deleteInput = document.createElement('input');
-                deleteInput.type = 'hidden';
-                deleteInput.name = 'delete_park';
-                deleteInput.value = '1';
-                
-                // Append inputs to the form
-                form.appendChild(parkIdInput);
-                form.appendChild(deleteInput);
-                
-                // Append the form to the body and submit it
-                document.body.appendChild(form);
-                form.submit();
-            }
+            // Append the form to the body and submit it
+            document.body.appendChild(form);
+            form.submit();
         }
-    </script>
+    }
+
+    // Handle the park details modal close button
+    $('#parkModal').on('hidden.bs.modal', function () {
+        // Clean up any dynamically added elements
+        var parkIdInput = document.querySelector('input[name="park_id"]');
+        if (parkIdInput) {
+            parkIdInput.remove();
+        }
+    });
+</script>
+
+
 </body>
 
 </html>

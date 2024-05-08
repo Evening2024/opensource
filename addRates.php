@@ -63,8 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     window.location.href = "parks.php";
                 }, 3000); // 3000 milliseconds = 3 seconds
             </script>';
-        }
-         else {
+        } else {
             // Error during insertion
             $error_message = 'Failed to insert data into the database: ' . $stmt->error;
         }
@@ -76,12 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // Close the database connection
 $conn->close();
-
-
 ?>
 
-
-<!-- HTML Section -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -91,127 +86,130 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>National Park Registration</title>
     <!-- Include Bootstrap CSS -->
-    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Custom CSS -->
     <style>
-        /* Form styling */
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+           
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        h2 {
+            color: #007bff;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
         form {
-            padding: 20px;
-            border-radius: 5px;
-            background-color: #f7f7f7;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin-top: 20px;
         }
 
         label {
             font-weight: bold;
+            color: #333;
         }
 
         .form-control {
-            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 15px;
         }
 
-        /* Section styling */
         .section-header {
-            font-weight: bold;
-            margin-top: 20px;
+            font-size: 24px;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-top: 30px;
+            margin-bottom: 20px;
         }
 
-        /* Custom button styling */
         .btn-primary {
-            margin-bottom: 10px;
+            background-color: #007bff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
         }
-        .section-header {
-    font-size: 24px; /* Set the desired font size */
-}
 
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        /* Style for the back button */
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+
+        .error-message {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 
 <body>
-    <!-- Include header.php file for the header -->
-    <?php include 'header.php'; ?>
 
-    
-    <!-- Retrieve park name from URL parameter -->
-    <?php
-    $park_name = isset($_GET['park_name']) ? filter_var($_GET['park_name'], FILTER_SANITIZE_STRING) : '';
-    ?>
+<!-- Include header.php file for the header -->
+<?php include 'header.php'; ?>
 
-    <!-- Form for registering national park details -->
+
+
     <div class="container">
-        <h2>Register National Park Details</h2>
+        <h2>Rates for <?php echo htmlspecialchars($_GET['park_name'] ?? ''); ?></h2>
 
-        <!-- Display error messages if any -->
-        <?php if (!empty($error_message)): ?>
-            <div class="alert alert-danger">
+        <a href="parks.php" class="btn btn-secondary back-button">Back to Parks</a>
+
+        <!-- Display error message if exists -->
+        <?php if (!empty($error_message)) : ?>
+            <div class="alert alert-danger error-message">
                 <?php echo $error_message; ?>
             </div>
         <?php endif; ?>
 
-        <!-- Form to register national park details -->
-        <form method="POST">
+        <!-- Retrieve park name from URL parameter -->
+        <?php
+        $park_name = isset($_GET['park_name']) ? filter_var($_GET['park_name'], FILTER_SANITIZE_STRING) : '';
+        ?>
 
-              <!-- Park Name -->
-              <div class="form-group">
+        <form method="POST">
+            <!-- Park Name -->
+            <div class="form-group">
                 <label for="park_name">Park Name:</label>
                 <input type="text" class="form-control" id="park_name" name="park_name" value="<?php echo htmlspecialchars($park_name); ?>" readonly>
             </div>
+
             <!-- National Park Information -->
-            
+            <div class="section-header">Season Details</div>
             <div class="form-group">
-                <label for="region">Season name  </label>
+                <label for="seasonname">Season Name:</label>
                 <input type="text" class="form-control" id="seasonname" name="seasonname">
             </div>
-
             <div class="form-group">
-                <label for="region">Season duration  </label>
+                <label for="seasonduration">Season Duration:</label>
                 <input type="text" class="form-control" id="seasonduration" name="seasonduration">
             </div>
 
             <!-- Park Fees Section -->
-            <div class="section-header" style="font-size: 24px;">Park  Fees</div>
-
-            <div class="form-group">
-                <label for="ea_citizen_adult">EA Citizen Adult (16 yrs and above):</label>
-                <input type="number" class="form-control" id="ea_citizen_adult" name="ea_citizen_adult">
-            </div>
-            <div class="form-group">
-                <label for="ea_citizen_children">EA Citizen Children (5 yrs to 15 yrs):</label>
-                <input type="number" class="form-control" id="ea_citizen_children" name="ea_citizen_children">
-            </div>
-            <div class="form-group">
-                <label for="ea_citizen_below_5">EA Citizen Below 5:</label>
-                <input type="number" class="form-control" id="ea_citizen_below_5" name="ea_citizen_below_5">
-            </div>
-            <div class="form-group">
-                <label for="non_ea_citizen_adult">Non-EA Citizen Adult (16 yrs and above):</label>
-                <input type="number" class="form-control" id="non_ea_citizen_adult" name="non_ea_citizen_adult">
-            </div>
-            <div class="form-group">
-                <label for="non_ea_citizen_children">Non-EA Citizen Children (5 yrs to 15 yrs):</label>
-                <input type="number" class="form-control" id="non_ea_citizen_children" name="non_ea_citizen_children">
-            </div>
-            <div class="form-group">
-                <label for="non_ea_citizen_below_5">Non-EA Citizen Below 5:</label>
-                <input type="number" class="form-control" id="non_ea_citizen_below_5" name="non_ea_citizen_below_5">
-            </div>
-            <div class="form-group">
-                <label for="tz_resident_above_16">TZ Resident Above 16 Years:</label>
-                <input type="number" class="form-control" id="tz_resident_above_16" name="tz_resident_above_16">
-            </div>
-            <div class="form-group">
-                <label for="tz_resident_children">TZ Resident Children (5 yrs to 15 yrs):</label>
-                <input type="number" class="form-control" id="tz_resident_children" name="tz_resident_children">
-            </div>
-            <div class="form-group">
-                <label for="tz_resident_below_5">TZ Resident Below 5:</label>
-                <input type="number" class="form-control" id="tz_resident_below_5" name="tz_resident_below_5">
-            </div>
-
-            <!-- Hotel Concession Fees Section -->
-            <div class="section-header" style="font-size: 24px;">Hotel Concession Fees</div>
-
+            <div class="section-header">Park Fees</div>
             <div class="form-group">
                 <label for="ea_citizen_adult">EA Citizen Adult (16 yrs and above):</label>
                 <input type="number" class="form-control" id="ea_citizen_adult" name="ea_citizen_adult">
@@ -250,14 +248,11 @@ $conn->close();
             </div>
 
             <!-- Guide Entry Fee Section -->
-           
+            <div class="section-header">Guide Entry & Vehicle Fees</div>
             <div class="form-group">
                 <label for="guide_entry_fee">Guide Entry Fee:</label>
                 <input type="number" class="form-control" id="guide_entry_fee" name="guide_entry_fee">
             </div>
-
-            <!-- Vehicle Fee Section -->
-           
             <div class="form-group">
                 <label for="vehicle_fee">Vehicle Fee:</label>
                 <input type="number" class="form-control" id="vehicle_fee" name="vehicle_fee">
@@ -268,7 +263,8 @@ $conn->close();
         </form>
     </div>
 
-   
+    <!-- Include Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 
 </html>
